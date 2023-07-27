@@ -16,7 +16,6 @@ export const unMapCommands = () => {
 
 const onMainViewReadyCommand = () => {
     Head.init();
-    Head.initGameModel();
 };
 
 const eventCommandPairs = Object.freeze([

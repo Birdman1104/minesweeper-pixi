@@ -18,10 +18,10 @@ class HeadModel extends ObservableModel {
     }
 
     public init(): void {
-        //
+        this.initGameModel();
     }
 
-    public initGameModel(): void {
+    private initGameModel(): void {
         this._gameModel = new GameModel();
         this._gameModel.init();
     }
