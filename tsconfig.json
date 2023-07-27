@@ -1,0 +1,17 @@
+{
+    "extends": "@tsconfig/recommended/tsconfig.json",
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "allowSyntheticDefaultImports": true,
+        "module": "commonjs",
+        "target": "esnext",
+        "downlevelIteration": true,
+        "skipLibCheck": true,
+        "allowUmdGlobalAccess": true,
+        "importHelpers": true,
+        "strictPropertyInitialization": false,
+        "typeRoots": ["@types", "node_modules/@types", "node_module/pixi.js"],
+        "lib": ["dom", "esnext"]
+    },
+    "exclude": ["node_modules", "webpack", "dist", "nodeScripts"]
+}
