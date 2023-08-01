@@ -76,6 +76,10 @@ export class BoardModel extends ObservableModel {
         this._state = value;
     }
 
+    set cells2D(value) {
+        this._cells2D = value;
+    }
+
     public init(): void {
         this.initCells2D();
         this._numOfFlags = 0;

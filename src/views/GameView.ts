@@ -1,13 +1,15 @@
 import { lego } from '@armathai/lego';
 import { ICellConfig, PixiGrid } from '@armathai/pixi-grid';
 import { getGameViewGridConfig } from '../configs/gridConfigs/GameViewGC';
-import { HeadModelEvents } from '../events/ModelEvents';
+import { GameModelEvents } from '../events/ModelEvents';
+import { BoardView } from './BoardView';
 
 export class GameView extends PixiGrid {
+    private board: BoardView | null;
     constructor() {
         super();
         this.build();
-        lego.event.on(HeadModelEvents.GameModelUpdate, this.gameModelUpdate, this);
+        lego.event.on(GameModelEvents.BoardUpdate, this.onBoardUpdate, this);
     }
 
     public getGridConfig(): ICellConfig {
@@ -22,7 +24,19 @@ export class GameView extends PixiGrid {
         //
     }
 
-    private gameModelUpdate(a: any, b: any, c: any): void {
-        console.warn(a, b, c);
+    private onBoardUpdate(board: any): void {
+        board ? this.buildBoard() : this.destroyBoard();
+    }
+
+    buildBoard() {
+        const board = new BoardView();
+        this.setChild('board', (this.board = board));
+    }
+
+    destroyBoard() {
+        if (this.board) {
+            this.board.destroy();
+            this.board = null;
+        }
     }
 }

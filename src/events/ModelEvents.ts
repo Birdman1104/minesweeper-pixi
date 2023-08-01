@@ -4,6 +4,7 @@ export const BoardModelEvents = {
     CheckerUpdate: 'BoardModelCheckerUpdate',
     CheckedCellsUpdate: 'BoardModelCheckedCellsUpdate',
     StateUpdate: 'BoardModelStateUpdate',
+    Cells2DUpdate: 'BoardModelCells2DUpdate',
 };
 
 export const CellModelEvents = {
