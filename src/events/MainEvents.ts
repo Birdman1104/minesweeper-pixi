@@ -8,17 +8,14 @@ export const MainGameEvents = {
     MainViewReady: 'MainGameEventsMainViewReady',
 };
 
-export const BoardViewEvent = {
-    CellClicked: 'BoardViewCellClicked',
+export const GameEvents = {
+    CellClicked: 'CellClickedGameEvent',
+    IconClick: 'IconClickGameEvent',
 };
 
 export const PointerEvent = {
     Down: 'PointerEventDown',
     Up: 'PointerEventUp',
-};
-
-export const IconEvents = {
-    Click: 'IconEventsClick',
 };
 
 export const ResultViewEvent = {

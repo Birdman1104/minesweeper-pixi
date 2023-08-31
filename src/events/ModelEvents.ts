@@ -1,7 +1,7 @@
 export const BoardModelEvents = {
     NumOfFlagsUpdate: 'BoardModelNumOfFlagsUpdate',
     RightMarksUpdate: 'BoardModelRightMarksUpdate',
-    CheckerUpdate: 'BoardModelCheckerUpdate',
+    IconTypeUpdate: 'BoardModelIconTypeUpdate',
     CheckedCellsUpdate: 'BoardModelCheckedCellsUpdate',
     StateUpdate: 'BoardModelStateUpdate',
     Cells2DUpdate: 'BoardModelCells2DUpdate',

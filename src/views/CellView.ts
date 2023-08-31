@@ -2,7 +2,7 @@ import { lego } from '@armathai/lego';
 import { gsap } from 'gsap';
 import { Container, Rectangle, Sprite, Text } from 'pixi.js';
 import { CELL_HEIGHT, CELL_WIDTH, CellBgTint } from '../configs/GameConfig';
-import { BoardViewEvent } from '../events/MainEvents';
+import { GameEvents } from '../events/MainEvents';
 import { CellType } from '../models/CellModel';
 
 export class CellView extends Container {
@@ -47,6 +47,16 @@ export class CellView extends Container {
         return new Rectangle(0, 0, CELL_WIDTH, CELL_HEIGHT);
     }
 
+    public updateNeighborsCount(value: number): void {
+        this.removeChild(this.cover);
+        this.addChild(this.cover);
+        this.cover.tint = 0xff0000;
+
+        if (value <= 0) return;
+        this._neighborCount = value;
+        this.buildNumber();
+    }
+
     public reveal(): void {
         this.mine && this.flag && this.flag.destroy();
         gsap.to(this.cover.scale, { x: 0, duration: 0.2, ease: Linear.easeNone });
@@ -54,70 +64,78 @@ export class CellView extends Container {
             gsap.to(this.mine.scale, { x: 1, y: 1, duration: 0.5, ease: Sine.easeInOut, repeat: -1, yoyo: true });
     }
 
-    mark() {
+    public mark(): void {
         this.flag.alpha = 1;
         // this._hint && (this._hint.alpha = 1);
     }
 
-    unmark() {
+    public unmark(): void {
         this.flag && (this.flag.alpha = 0);
         // this._hint && (this._hint.alpha = 0);
     }
 
-    build() {
-        this._buildBg();
-        this._type === CellType.Number ? this._buildNumber() : this._buildMine();
-        this._buildCover();
-        this._type === CellType.Number && this._buildWrong();
-        this._buildFlag();
+    public build(): void {
+        this.buildBg();
+        this.buildCover();
     }
 
-    _buildBg() {
+    public updateType(type: CellType): void {
+        this._type = type;
+        this._type === CellType.Mine && this.buildMine();
+    }
+
+    private buildBg(): void {
         const bg = Sprite.from('cell.png');
         bg.anchor.set(0);
-        console.warn(this._type);
-
-        const tint = 0xff0000;
+        const tint = 0xffffff;
         // const tint = this._type === CellType.Mine ? CellBgTint[this._type] : CellBgTint[this._neighborCount];
         bg.tint = tint;
         this.addChild((this.bg = bg));
     }
 
-    _buildCover() {
+    private buildCover(): void {
         const cover = Sprite.from('cell.png');
         cover.anchor.set(0);
         cover.tint = CellBgTint[10];
         cover.eventMode = 'static';
-        cover.on('pointerdown', () => lego.event.emit(BoardViewEvent.CellClicked, this._uuid));
+        cover.on('pointerdown', () => lego.event.emit(GameEvents.CellClicked, this._uuid));
+        cover.alpha = 0.3;
         this.addChild((this.cover = cover));
     }
 
-    _buildWrong() {
+    private buildWrong(): void {
         // const hint = makeSprite(getCellSpriteConfig(0xe09775));
         // hint.anchor.set(0);
         // hint.alpha = 0;
         // this.addChild((this._hint = hint));
     }
 
-    _buildNumber() {
-        if (this._neighborCount === 0) {
+    private buildNumber(): void {
+        if (this._neighborCount <= 0) {
             return;
         }
-        // const label = makeText(getCellTextConfig(this._neighborCount));
-        // label.anchor.set(0.5);
-        // label.position.set(this.bg.width / 2, this.bg.height / 2);
-        // this.addChild((this._label = label));
+        console.warn(`INIT TEXT`);
+
+        const label = new Text(`${this._neighborCount}`, {
+            fontFamily: 'Arial',
+            fontSize: 24,
+            fill: 0x000000,
+            align: 'center',
+        });
+        label.anchor.set(0.5);
+        label.position.set(this.bg.width / 2, this.bg.height / 2);
+        this.addChild((this.label = label));
     }
 
-    _buildMine() {
-        const mine = Sprite.from('game/mine.png');
+    private buildMine(): void {
+        const mine = Sprite.from('mine.png');
         mine.anchor.set(0.5);
         mine.scale.set(0.8);
         mine.position.set(this.bg.width / 2, this.bg.height / 2);
         this.addChild((this.mine = mine));
     }
 
-    _buildFlag() {
+    private buildFlag(): void {
         const flag = Sprite.from('flag.png');
         flag.anchor.set(0.5);
         flag.scale.set(0.8);

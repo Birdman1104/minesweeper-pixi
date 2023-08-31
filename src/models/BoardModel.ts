@@ -1,4 +1,4 @@
-import { COL, ROW } from '../configs/GameConfig';
+import { COL, NUM_OF_MINES, ROW } from '../configs/GameConfig';
 import { CellModel, CellState, CellType } from './CellModel';
 import { ObservableModel } from './ObservableModel';
 
@@ -18,10 +18,11 @@ export enum IconType {
 export class BoardModel extends ObservableModel {
     private _state: BoardState = BoardState.Unknown;
     private _cells2D: CellModel[][];
-    private _checker: IconType = IconType.Unknown;
+    private _iconType: IconType = IconType.Unknown;
     private _numOfFlags = -1;
     private _checkedCells = 0;
     private _rightMarks = 0;
+    private _valuesSet = false;
 
     public constructor() {
         super('BoardModel');
@@ -48,12 +49,12 @@ export class BoardModel extends ObservableModel {
         this._rightMarks = value;
     }
 
-    get checker() {
-        return this._checker;
+    get iconType() {
+        return this._iconType;
     }
 
-    set checker(value) {
-        this._checker = value;
+    set iconType(value) {
+        this._iconType = value;
     }
 
     get checkedCells() {
@@ -68,22 +69,26 @@ export class BoardModel extends ObservableModel {
         return this._state;
     }
 
-    get cells2D() {
-        return this._cells2D;
-    }
-
     set state(value) {
         this._state = value;
+    }
+
+    get cells2D() {
+        return this._cells2D;
     }
 
     set cells2D(value) {
         this._cells2D = value;
     }
 
+    get valuesSet() {
+        return this._valuesSet;
+    }
+
     public init(): void {
         this.initCells2D();
         this._numOfFlags = 0;
-        this._checker = IconType.Mine;
+        this._iconType = IconType.Mine;
         this._state = BoardState.Game;
     }
 
@@ -114,6 +119,13 @@ export class BoardModel extends ObservableModel {
             }
         }
         return cell;
+    }
+
+    public initCellsValues(): void {
+        this._valuesSet = true;
+        this.setMines(NUM_OF_MINES, this._cells2D);
+        this.setNumbers(this._cells2D);
+        this.setCounters(this._cells2D);
     }
 
     public revealAll(): void {
@@ -164,12 +176,10 @@ export class BoardModel extends ObservableModel {
 
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
-                const cell = new CellModel(i, j, CellType.Number);
+                const cell = new CellModel(i, j, CellType.Unknown);
                 arr[i][j] = cell;
             }
         }
-        // this.setMines(NUM_OF_MINES, arr);
-        // this.setCounters(arr);
 
         return arr;
     }
@@ -177,6 +187,17 @@ export class BoardModel extends ObservableModel {
     private setMines(cnt: number, board: CellModel[][]): void {
         for (let n = 0; n < cnt; n++) {
             this.putMine(board);
+        }
+    }
+
+    private setNumbers(board: CellModel[][]): void {
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board[i].length; j++) {
+                const cell = board[i][j];
+                if (cell.type !== CellType.Mine) {
+                    cell.type = CellType.Number;
+                }
+            }
         }
     }
 
@@ -202,7 +223,7 @@ export class BoardModel extends ObservableModel {
 
     private countMines(cell: CellModel, arr: CellModel[][]): void {
         if (cell.type === CellType.Mine) {
-            cell.neighborCount = -1;
+            // cell.neighborCount = -1;
             return;
         }
 

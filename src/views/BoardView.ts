@@ -2,7 +2,7 @@ import { lego } from '@armathai/lego';
 import { Container, Rectangle } from 'pixi.js';
 import { CELL_HEIGHT, CELL_WIDTH, COL, OFFSET, ROW } from '../configs/GameConfig';
 import { BoardModelEvents, CellModelEvents } from '../events/ModelEvents';
-import { CellState } from '../models/CellModel';
+import { CellState, CellType } from '../models/CellModel';
 import { CellView } from './CellView';
 
 export class BoardView extends Container {
@@ -13,8 +13,9 @@ export class BoardView extends Container {
         this.cells = [];
 
         lego.event.on(BoardModelEvents.Cells2DUpdate, this.onCells2DUpdate, this);
-
         lego.event.on(CellModelEvents.StateUpdate, this.onCellStateUpdate, this);
+        lego.event.on(CellModelEvents.TypeUpdate, this.onCellTypeUpdate, this);
+        lego.event.on(CellModelEvents.NeighborCountUpdate, this.onCellNeighborsCountUpdate, this);
         //
     }
 
@@ -46,13 +47,6 @@ export class BoardView extends Container {
                 this.addChild(cell);
             });
         });
-
-        // const { width, height } = this.getBounds();
-        // const gr = new PIXI.Graphics();
-        // gr.beginFill(0xfff111, 0.5);
-        // gr.drawRect(0, 0, width, height);
-        // gr.endFill();
-        // this.addChild(gr);
     }
 
     onCellStateUpdate(newState: CellState, oldState: CellState, uuid: string) {
@@ -71,5 +65,15 @@ export class BoardView extends Container {
             default:
                 break;
         }
+    }
+
+    onCellTypeUpdate(newType: CellType, oldType: CellType, uuid: string) {
+        const cell = this.getCellByUuid(uuid) as CellView;
+        cell.updateType(newType);
+    }
+
+    onCellNeighborsCountUpdate(newValue: number, oldValue: number, uuid: string) {
+        const cell = this.getCellByUuid(uuid) as CellView;
+        cell.updateNeighborsCount(newValue);
     }
 }
